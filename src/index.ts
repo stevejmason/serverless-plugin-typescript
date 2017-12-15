@@ -119,7 +119,7 @@ export class TypeScriptPlugin {
       // Save original service path and functions
       this.originalServicePath = this.serverless.config.servicePath
       // Fake service path so that serverless will know what to zip
-      this.serverless.config.servicePath = path.join(this.originalServicePath, buildFolder)
+    //   this.serverless.config.servicePath = path.join(this.originalServicePath, buildFolder)
     }
 
     const tsconfig = typescript.getTypescriptConfig(
@@ -127,7 +127,7 @@ export class TypeScriptPlugin {
       this.isWatching ? null : this.serverless.cli
     )
 
-    tsconfig.outDir = buildFolder
+    // tsconfig.outDir = buildFolder
 
     const emitedFiles = await typescript.run(this.rootFileNames, tsconfig)
     await this.copyExtras()
@@ -137,39 +137,39 @@ export class TypeScriptPlugin {
 
   async copyExtras() {
     // include node_modules into build
-    if (!fs.existsSync(path.resolve(path.join(buildFolder, 'node_modules')))) {
-      fs.symlinkSync(path.resolve('node_modules'), path.resolve(path.join(buildFolder, 'node_modules')))
-    }
+    // if (!fs.existsSync(path.resolve(path.join(buildFolder, 'node_modules')))) {
+    //   fs.symlinkSync(path.resolve('node_modules'), path.resolve(path.join(buildFolder, 'node_modules')))
+    // }
 
     // include package.json into build so Serverless can exlcude devDeps during packaging
-    if (!fs.existsSync(path.resolve(path.join(buildFolder, 'package.json')))) {
-      fs.symlinkSync(path.resolve('package.json'), path.resolve(path.join(buildFolder, 'package.json')))
-    }
+    // if (!fs.existsSync(path.resolve(path.join(buildFolder, 'package.json')))) {
+    //   fs.symlinkSync(path.resolve('package.json'), path.resolve(path.join(buildFolder, 'package.json')))
+    // }
 
     // include any "extras" from the "include" section
-    if (this.serverless.service.package.include && this.serverless.service.package.include.length > 0) {
-      const files = await globby(this.serverless.service.package.include)
-
-      for (const filename of files) {
-        const destFileName = path.resolve(path.join(buildFolder, filename))
-        const dirname = path.dirname(destFileName)
-
-        if (!fs.existsSync(dirname)) {
-          fs.mkdirpSync(dirname)
-        }
-
-        if (!fs.existsSync(destFileName)) {
-          fs.copySync(path.resolve(filename), path.resolve(path.join(buildFolder, filename)))
-        }
-      }
-    }
+    // if (this.serverless.service.package.include && this.serverless.service.package.include.length > 0) {
+    //   const files = await globby(this.serverless.service.package.include)
+    //
+    //   for (const filename of files) {
+    //     const destFileName = path.resolve(path.join(buildFolder, filename))
+    //     const dirname = path.dirname(destFileName)
+    //
+    //     if (!fs.existsSync(dirname)) {
+    //       fs.mkdirpSync(dirname)
+    //     }
+    //
+    //     if (!fs.existsSync(destFileName)) {
+    //       fs.copySync(path.resolve(filename), path.resolve(path.join(buildFolder, filename)))
+    //     }
+    //   }
+    // }
   }
 
   async moveArtifacts(): Promise<void> {
-    await fs.copy(
-      path.join(this.originalServicePath, buildFolder, serverlessFolder),
-      path.join(this.originalServicePath, serverlessFolder)
-    )
+    // await fs.copy(
+    //   path.join(this.originalServicePath, buildFolder, serverlessFolder),
+    //   path.join(this.originalServicePath, serverlessFolder)
+    // )
 
     if (this.options.function) {
       const fn = this.serverless.service.functions[this.options.function]
@@ -204,9 +204,12 @@ export class TypeScriptPlugin {
   async cleanup(): Promise<void> {
     await this.moveArtifacts()
     // Restore service path
-    this.serverless.config.servicePath = this.originalServicePath
+    // this.serverless.config.servicePath = this.originalServicePath
     // Remove temp build folder
-    fs.removeSync(path.join(this.originalServicePath, buildFolder))
+    // fs.removeSync(path.join(this.originalServicePath, buildFolder))
+
+    // Remove TSC build folde
+    fs.removeSync(path.join(this.originalServicePath, tsconfig.outDir));
   }
 
 }
