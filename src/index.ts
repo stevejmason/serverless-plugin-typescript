@@ -129,6 +129,9 @@ export class TypeScriptPlugin {
 
     // tsconfig.outDir = buildFolder
 
+    // Clean TSC build folder
+    fs.removeSync(path.join(this.originalServicePath, tsconfig.outDir));
+
     const emitedFiles = await typescript.run(this.rootFileNames, tsconfig)
     await this.copyExtras()
     this.serverless.cli.log('Typescript compiled.')
@@ -207,9 +210,6 @@ export class TypeScriptPlugin {
     // this.serverless.config.servicePath = this.originalServicePath
     // Remove temp build folder
     // fs.removeSync(path.join(this.originalServicePath, buildFolder))
-
-    // Remove TSC build folde
-    fs.removeSync(path.join(this.originalServicePath, tsconfig.outDir));
   }
 
 }
